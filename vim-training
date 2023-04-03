@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+function cleanup() {
+  # make cursor visible
+  tput cnorm
+}
+
+generate_commands() {
+  trap cleanup EXIT
+
+  case $1 in
+    easy) time_for_answer=3 ;;
+    medium) time_for_answer=2 ;;
+    hard) time_for_answer=1 ;;
+  esac
+
+  # make cursor invisible
+  tput civis
+  while IFS='' read -r -n1 command; do
+    case "${command}" in
+      h) echo -n "left" ;;
+      j) echo -n "down" ;;
+      k) echo -n "up" ;;
+      l) echo -n "right" ;;
+      g) echo -n "top" ;;
+      G) echo -n "bottom" ;;
+      w) echo -n "next word" ;;
+      W) echo -n "next WORD" ;;
+      e) echo -n "end of word" ;;
+      E) echo -n "end of WORD" ;;
+      b) echo -n "back a word" ;;
+      B) echo -n "back a WORD" ;;
+      d) echo -n "scroll down" ;;
+      u) echo -n "scroll up" ;;
+      ^) echo -n "beginning of the line" ;;
+      $) echo -n "end of the line" ;;
+    esac
+
+    for (( i = 0; i < time_for_answer; i++)); do
+      sleep 0.5s
+      echo -ne '\a'
+    done
+
+    # delete text in output
+    echo -ne '\r\e[K'
+    sleep 1s
+  done < <(cat /dev/urandom | tr -dc 'hjklgGwWeEbBdu^$')
+}
+
+exit_with_usage() {
+  echo "usage: $0 <e[asy]|m[edium]|h[ard]>" >&2
+  exit 1
+}
+
+main() {
+  if (( $# == 0 )); then
+    generate_commands easy
+    exit
+  fi
+
+  if (( $# != 1 )); then
+    exit_with_usage
+  fi
+
+  case "$1" in
+    e|easy) generate_commands easy ;;
+    m|medium) generate_commands medium ;;
+    h|hard) generate_commands hard ;;
+    *) exit_with_usage ;;
+  esac
+}
+
+main "$@"
