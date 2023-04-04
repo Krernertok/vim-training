@@ -30,8 +30,10 @@ generate_commands() {
       E) echo -n "end of WORD" ;;
       b) echo -n "back a word" ;;
       B) echo -n "back a WORD" ;;
-      d) echo -n "scroll down" ;;
-      u) echo -n "scroll up" ;;
+      u) echo -n "undo" ;;
+      1) echo -n "scroll up" ;;
+      2) echo -n "scroll down" ;;
+      3) echo -n "redo" ;;
       ^) echo -n "beginning of the line" ;;
       $) echo -n "end of the line" ;;
     esac
@@ -44,7 +46,7 @@ generate_commands() {
     # delete text in output
     echo -ne '\r\e[K'
     sleep 1s
-  done < <(cat /dev/urandom | tr -dc 'hjklgGwWeEbBdu^$')
+  done < <(cat /dev/urandom | tr -dc 'hjklgGwWeEbB12u3^$')
 }
 
 exit_with_usage() {
